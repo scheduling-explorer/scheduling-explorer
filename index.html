@@ -1,1 +1,451 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scheduling Explorer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="main.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <i class="bi bi-cpu"></i>
+            <span class="ms-2">Scheduling Explorer</span>
+          </a>
+        </div>
+      </nav>
+    </header>
+    <div class="container-fluid">
+      <div class="row">
+        <main class="col-9 p-3">
+          <div class="col-12 my-2">
+            <button class="btn btn-primary" id="start-btn">
+              <i class="bi bi-play-fill"></i>
+              Start
+            </button>
+            <button class="btn btn-primary" disabled id="pause-btn">
+              <i class="bi bi-pause-fill"></i>
+              Pause
+            </button>
+            <button class="btn btn-primary" id="reset-btn">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              Reset
+            </button>
+            t: <span id="t" class="font-monospace">0.00</span>s
+          </div>
+
+          <div id="queues">
+            <div class="queue" id="queue-1"></div>
+          </div>
+
+          <div class="timeline" id="timeline"></div>
+
+          <div class="mt-5">
+            <div class="card">
+              <h5 class="card-header">Metrics</h5>
+              <div class="card-body">
+                <div class="row">
+                  <p class="col-8 mb-3" style="text-align: justify">
+                    Turnaround time and response time are two metrics that can
+                    be used to analyse the efficiency of a scheduling algoirhtm.
+                    Turnaround time is the time between arrival and completion
+                    of a task. Response time is the time between arrival and the
+                    first run of a task. For both you can see the average while
+                    running tasks and view how each algoirhtm has a different
+                    effect on these metrics.
+                  </p>
+
+                  <div class="col-1"></div>
+                  <div class="col-3">
+                    <table>
+                      <tr>
+                        <td>Average response time:</td>
+                        <td>
+                          <span id="response-time" class="mx-2 font-monospace"
+                            >0.00</span
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Average turnaround time:</td>
+                        <td>
+                          <span id="turnaround-time" class="mx-2 font-monospace"
+                            >0.00</span
+                          >
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="text-align: right"></p>
+                    <p style="text-align: right"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="mt-5">History</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Task</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Ran from</th>
+                <th scope="col">Response Time</th>
+                <th scope="col">Turnaround Time</th>
+              </tr>
+            </thead>
+            <tbody id="history-table"></tbody>
+          </table>
+        </main>
+        <aside class="col-3 p-3">
+          <div class="card mb-3">
+            <h5 class="card-header">Settings</h5>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="system-selector"
+                    >System</label
+                  >
+                </div>
+                <div class="col align-self-end">
+                  <select
+                    class="form-select"
+                    name="system"
+                    id="system-selector"
+                  >
+                    <option value="pc">PC</option>
+                    <option value="phone">Phone</option>
+                    <option value="supercomputer">Super Computer</option>
+                    <option value="webserver">Web Server</option>
+                    <option value="manual">Manual</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="algorithm-selector"
+                    >Algorithm</label
+                  >
+                </div>
+                <div class="col align-self-end">
+                  <select
+                    class="form-select"
+                    name="algorithm"
+                    id="algorithm-selector"
+                  >
+                    <option value="fifo">FIFO</option>
+                    <option value="lifo">LIFO</option>
+                    <option value="sjf">SJF</option>
+                    <option value="STCF">STCF</option>
+                    <option value="rr">Round Robin</option>
+                    <option value="mlfq">MLFQ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="interval"
+                    >Slot Duration</label
+                  >
+                </div>
+                <div class="col align-self-end">
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      type="number"
+                      id="slot-duration"
+                      value="2"
+                    />
+                    <div class="input-group-text">s</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <h5 class="card-header">About this Algorithm</h5>
+            <div class="card-body">
+              <p id="algo-description" class="mb-3"></p>
+              <iframe
+                id="algo-video"
+                width="288"
+                height="162"
+                src="https://www.youtube.com/embed/ga2C1stBOPA"
+                frameborder="0"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+
+          <div class="card mb-3" id="rr-config" style="display: none">
+            <h5 class="card-header">Algorithm Config</h5>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="rr-interval"
+                    >RR Interval</label
+                  >
+                </div>
+
+                <div class="col align-self-end">
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      type="number"
+                      id="rr-interval"
+                      value="2"
+                    />
+                    <div class="input-group-text">slots</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3" id="mlfq-config" style="display: none">
+            <h5 class="card-header">Algorithm Config</h5>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="mlfq-priority-boost"
+                    >Priority Boost</label
+                  >
+                </div>
+
+                <div class="col align-self-end">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="mlfq-priority-boost"
+                  />
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="mlfq-rr-interval"
+                    >RR Interval</label
+                  >
+                </div>
+
+                <div class="col align-self-end">
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      type="number"
+                      id="mlfq-rr-interval"
+                      value="2"
+                    />
+                    <div class="input-group-text">slots</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label
+                    class="col-form-label"
+                    for="mlfq-priority-boost-interval"
+                    >Priority Boost Interval</label
+                  >
+                </div>
+
+                <div class="col align-self-end">
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      type="number"
+                      id="mlfq-priority-boost-interval"
+                      value="5"
+                    />
+                    <div class="input-group-text">slots</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="col-form-label" for="mlfq-num-queues"
+                    >Num Queues</label
+                  >
+                </div>
+
+                <div class="col align-self-end">
+                  <input
+                    class="form-control"
+                    type="number"
+                    id="mlfq-num-queues"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="display: none" id="add-task-card">
+            <h5 class="card-header">Add Task</h5>
+            <div class="card-body">
+              <form>
+                <div class="row mb-3">
+                  <label for="task-name" class="col-sm-3 col-form-label"
+                    >Name</label
+                  >
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="task-name" />
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="task-duration" class="col-sm-3 col-form-label"
+                    >Duration</label
+                  >
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="task-duration"
+                    />
+                  </div>
+                </div>
+              </form>
+              <button
+                role="button"
+                class="btn btn-primary"
+                id="create-task-btn"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="50-sec-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Simulator Paused</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              The simulator automatically pauses after 50 slots, to make it easy
+              for your to compare the performance of the algoirhtms on various
+              systems.
+            </p>
+
+            <p>
+              You can hit play to continue for as long as you'd like! Every 50
+              slots, all initial tasks will be added automatically.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="noob-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Welcome!</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              On this interactive and customizable website different CPU
+              scheduling policies can be explored.
+            </p>
+            <p>
+              You can discover algorithms that work according to the following
+              scheduling policies:
+            </p>
+            <ul>
+              <li>First in, First out (FIFO)</li>
+              <li>Last in, First out (LIFO)</li>
+              <li>Shortest Job First (SJF)</li>
+              <li>Shortest-Time-to-Completion First (STCF)</li>
+              <li>Round Robin (RR)</li>
+              <li>the Multilevel Feedback Queue (MLFQ)</li>
+            </ul>
+            <p>
+              To learn more about how the systems work, you can watch the
+              corresponding videos or read the descriptions.
+            </p>
+            <p>Tasks are added automatically but you can also add your own.</p>
+            <p>
+              By looking at the metrics of turnaround time and response time you
+              can analyse the functionalities of the different algorithms.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./utils.js"></script>
+
+    <script src="./algos/fifo.js"></script>
+    <script src="./algos/lifo.js"></script>
+    <script src="./algos/sjf.js"></script>
+    <script src="./algos/STCF.js"></script>
+    <script src="./algos/rr.js"></script>
+    <script src="./algos/mlfq.js"></script>
+
+    <script src="./main.js"></script>
+    <script src="./interfaces.js"></script>
+    <!-- 
+    <script type="text/javascript">
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("existing-iframe-example", {});
+      }
+    </script> -->
+  </body>
+</html>

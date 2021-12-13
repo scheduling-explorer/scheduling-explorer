@@ -1,0 +1,92 @@
+p {
+  margin: 0;
+  line-height: normal;
+}
+
+.queue {
+  border-bottom: 1px solid gray;
+  height: 80px;
+
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  vertical-align: middle;
+  align-items: center;
+  overflow: hidden;
+}
+
+.queue > p:first-of-type {
+  margin-right: 1em;
+}
+
+.task {
+  height: 80px;
+
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.square {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.square-orange,
+.task-orange {
+  background-color: orange;
+}
+.square-blue,
+.task-blue {
+  background-color: dodgerblue;
+}
+.square-green,
+.task-green {
+  background-color: mediumseagreen;
+}
+.square-purple,
+.task-purple {
+  background-color: slateblue;
+}
+.square-red,
+.task-red {
+  background-color: tomato;
+}
+.square-pink,
+.task-pink {
+  background-color: violet;
+}
+.square-yellow,
+.task-yellow {
+  background-color: gold;
+}
+.square-brown,
+.task-brown {
+  background-color: brown;
+}
+.square-darkblue,
+.task-darkblue {
+  background-color: darkblue;
+}
+.square-lime,
+.task-lime {
+  background-color: lime;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  vertical-align: middle;
+  align-items: center;
+  overflow: hidden;
+}
+
+.timeline-item {
+  border-left: 1px solid black;
+  padding-left: 3px;
+}
